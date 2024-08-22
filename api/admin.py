@@ -132,4 +132,4 @@ async def delete_student(user_id: int):
         await student.delete()  # 删除学生记录
 
     await user.delete()  # 删除用户
-    return {"message": "学生和相关账户删除成功"}
+    return {"message": "学生和相关账户删除"}

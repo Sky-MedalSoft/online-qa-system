@@ -1,16 +1,14 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi import Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi import Request
-
 from tortoise.contrib.fastapi import register_tortoise
-from api.general import reg, manager
+
 from api.admin import admin
-from api.teacher import teacher
+from api.general import reg, manager
 from api.student import router
-
-
+from api.teacher import teacher
 from settings import TORTOISE_ORM
 
 app = FastAPI()
@@ -21,7 +19,13 @@ register_tortoise(
     config=TORTOISE_ORM
 )
 
-@app.get("/reg", tags=["注册（返回前端页面）"], response_class=HTMLResponse)
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/register", tags=["注册（返回前端页面）"], response_class=HTMLResponse)
 async def get_register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
