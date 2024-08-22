@@ -31,7 +31,7 @@ class Student(Model):
     学生模型
     """
     id = fields.IntField(pk=True, description="学生ID")
-    user_id = fields.IntField(description="用户ID")
+    user = fields.OneToOneField('models.User', related_name='profile', on_delete=fields.CASCADE)  # 设定用户关系
     class_id = fields.IntField(description="所属班级ID")
 
     class Meta:

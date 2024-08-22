@@ -15,7 +15,7 @@ class ClassCreate(BaseModel):
     teacher_id: int
 
 
-@admin.post("/create_teacher")
+@admin.post("/create_teacher",description="创建教师")
 async def create_teacher(teacher: TeacherCreate):
     existing_teacher = await User.get_or_none(username=teacher.username)
     if existing_teacher:
@@ -26,7 +26,7 @@ async def create_teacher(teacher: TeacherCreate):
     return {"message": "教师创建成功"}
 
 
-@admin.post("/create_class")
+@admin.post("/create_class",description="创建班级")
 async def create_class(class_data: ClassCreate):
     teacher = await User.get_or_none(id=class_data.teacher_id)
     if not teacher or teacher.role != "teacher":
