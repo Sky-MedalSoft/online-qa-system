@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from models import Student, Assignment, Submission, User
+from models import Student, Assignment, Submission, User, Class
 
 router = APIRouter()
 
@@ -36,11 +36,36 @@ async def get_my_classes(user_id: int):
     return {"class_id": student.class_id}
 
 
-
-@router.get("/class_members/{class_id}", summary="获取班级成员", description="获取指定班级的所有学生成员。")
+@router.get("/class_members/{class_id}", summary="获取班级成员",
+            description="获取指定班级的所有学生成员及班级教师信息。")
 async def get_class_members(class_id: int):
-    students = await Student.filter(class_id=class_id)
-    return [{"id": student.id, "user_id": student.user_id} for student in students]
+    # 查找班级
+    class_info = await Class.get_or_none(id=class_id)
+    if not class_info:
+        raise HTTPException(status_code=404, detail="班级未找到")
+
+    # 获取班级成员
+    students = await Student.filter(class_id=class_id).prefetch_related('user')
+
+    # 收集学生信息
+    student_list = [{"id": student.id, "user_id": student.user_id, "username": student.user.username} for student in
+                    students]
+
+    # 获取教师信息
+    teacher = await User.get_or_none(id=class_info.teacher_id)
+    if teacher:
+        teacher_name = teacher.username
+    else:
+        teacher_name = "未找到教师"
+
+    # 返回班级信息，包括班级成员和班级教师的信息
+    return {
+        "class_id": class_info.id,
+        "class_name": class_info.name,
+        "teacher_id": class_info.teacher_id,
+        "teacher_name": teacher_name,  # 返回教师的用户名
+        "students": student_list
+    }
 
 
 @router.get("/assignments/{user_id}", summary="获取作业列表", description="根据用户ID获取学生所在班级的作业列表。")
