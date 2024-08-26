@@ -5,54 +5,161 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>首页</title>
     <style>
+        /* 全局样式 */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        /* 头部样式 */
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header nav {
+            margin-top: 10px;
+        }
+
+        header nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+
+        header nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* 主要内容样式 */
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
         #chat {
             border: 1px solid #ccc;
             height: 400px;
             overflow-y: scroll;
             padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        #chat div {
+            margin-bottom: 10px;
+        }
+
+        .user-message {
+            background-color: #e0f7fa;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: right;
+        }
+
+        .assistant-message {
+            background-color: #e8f5e9;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: left;
         }
 
         #user-input {
-            width: 95%;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #send-button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #send-button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-<h1>欢迎使用在线问答系统</h1>
-<p><a href="/register">注册用户</a></p>
-<p><a href="/login">登录</a></p>
-<div id="chat"></div>
-<input id="user-input" placeholder="输入您的问题..." type="text"/>
-<button id="send-button">发送</button>
+<header>
+    <h1>欢迎使用在线问答系统</h1>
+    <nav>
+        <a href="/register">注册用户</a>
+        <a href="/login">登录</a>
+    </nav>
+</header>
+<main>
+    <div id="chat"></div>
+    <input id="user-input" placeholder="输入您的问题..." type="text"/>
+    <button id="send-button">发送</button>
+</main>
 
 <script>
-    document.getElementById("send-button").onclick = async () => {
+    const sendMessage = async () => {
         const inputField = document.getElementById("user-input");
         const message = inputField.value;
         inputField.value = "";  // 清空输入框
 
         const chatBox = document.getElementById("chat");
-        chatBox.innerHTML += `<div>用户: ${message}</div>`;
+        chatBox.innerHTML += `<div class="user-message">用户: ${message}</div>`;
 
-        const response = await fetch("/chat", {
-            method: "POST",
+        // 创建一个新的助手消息div
+        const assistantDiv = document.createElement("div");
+        assistantDiv.className = "assistant-message";
+        assistantDiv.textContent = "助手: ";
+        chatBox.appendChild(assistantDiv);
+
+        const response = await fetch("/chat?query=" + encodeURIComponent(message), {
+            method: "GET",
             headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({message})
+                "Accept": "text/event-stream"
+            }
         });
 
         const reader = response.body.getReader();
-        let result = "";
+        const decoder = new TextDecoder("utf-8");
+
         while (true) {
             const {done, value} = await reader.read();
             if (done) break;
-            result += new TextDecoder("utf-8").decode(value);
-            chatBox.innerHTML += `<div>助手: ${result}</div>`;
-        }
 
-        chatBox.scrollTop = chatBox.scrollHeight;  // 滚动到最新消息
+            const chunk = decoder.decode(value, {stream: true});
+            const lines = chunk.split('\n');
+            lines.forEach(line => {
+                if (line.startsWith('data: ')) {
+                    assistantDiv.textContent += line.slice(6); // 去掉 'data: '
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            });
+        }
     };
+
+    document.getElementById("send-button").onclick = sendMessage;  // 绑定点击事件
+    document.getElementById("user-input").addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {  // 检测到Enter键
+            event.preventDefault();  // 防止默认行为
+            sendMessage();  // 调用发送消息函数
+        }
+    });
 </script>
 </body>
 </html>

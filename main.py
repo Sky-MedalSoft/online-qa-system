@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from tortoise.contrib.fastapi import register_tortoise
 
 from api.admin import admin
+from api.chat import chatR
 from api.general import reg, manager
 from api.student import router
 from api.teacher import teacher
@@ -19,6 +20,7 @@ register_tortoise(
     config=TORTOISE_ORM
 )
 
+app.include_router(chatR, tags=["聊天"])
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
