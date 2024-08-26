@@ -12,7 +12,9 @@
 * 使用Dockerfile进行打包与部署
 * 运行查看在线的同学与老师，并进行实时聊天
 
-需求：
+---
+
+# 项目需求
 请使用 FastAPI 框架、Python3.10、MySQL（或 Sqlite）、Redis（可选） 完成以下的项目需求：
 
 * 建立在线git仓库（可选：公司 gitlab、gitee、GitHub），邀请我作为查阅者（即 具有访问权限）
