@@ -1,3 +1,18 @@
+已完成内容：
+
+* 接口开发
+* 接口文档编写
+  地址：https://apifox.com/apidoc/shared-51c1ceb1-cb5c-463b-8922-e9c106aef720
+* 首页智能助手（采用流式响应）
+* 前端开发（部分）-- index login register 三个页面
+
+未完成内容：
+
+* 前端开发
+* 使用Dockerfile进行打包与部署
+* 运行查看在线的同学与老师，并进行实时聊天
+
+需求：
 请使用 FastAPI 框架、Python3.10、MySQL（或 Sqlite）、Redis（可选） 完成以下的项目需求：
 
 * 建立在线git仓库（可选：公司 gitlab、gitee、GitHub），邀请我作为查阅者（即 具有访问权限）
@@ -47,16 +62,3 @@
 * 使用Dockerfile进行打包与部署
 * 开发对应的前端
 
-已完成内容：
-
-* 接口开发
-* 接口文档编写
-  地址：https://apifox.com/apidoc/shared-51c1ceb1-cb5c-463b-8922-e9c106aef720
-* 首页智能助手（采用流式响应）
-* 前端开发（部分）-- index login register 三个页面
-
-未完成内容：
-
-* 前端开发
-* 使用Dockerfile进行打包与部署
-* 运行查看在线的同学与老师，并进行实时聊天
