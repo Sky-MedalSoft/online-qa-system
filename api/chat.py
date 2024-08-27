@@ -7,7 +7,7 @@ from sse_starlette.sse import EventSourceResponse
 chatR = APIRouter()
 
 # 设置API密钥
-os.environ['DASHSCOPE_API_KEY'] = 'sk-36addf7e158c45b3a33c022fdeed0100'
+os.environ['DASHSCOPE_API_KEY'] = '密钥'
 
 client = OpenAI(
     api_key=os.getenv("DASHSCOPE_API_KEY"),
